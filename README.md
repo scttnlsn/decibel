@@ -54,6 +54,10 @@ socket.onmessage = function (msg) {
 * `queue:add` - the item passed in the first arg was appended to the player queue
 * `state` - the player state changed to the values in the first arg (object includes index, status and position properties)
 
+### Discovery
+
+Decibel uses multicast DNS-SD (i.e. Zeroconf/Bonjour) to discover services on the network.  Decibel services all use the service type `_decibel._tcp` and include a `name` attribute in the TXT record corresponding to the specific type service (i.e. `decibel-player`).
+
 ## index
 
 TODO
