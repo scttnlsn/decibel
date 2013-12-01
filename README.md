@@ -4,6 +4,8 @@ Networked audio player services.
 
 ## player
 
+A player process plays audio from URLs through the host's speakers.  It maintains a queue of playable URLs and notifies connected clients whenever its state changes.
+
 To start a player, run:
 
     $ decibel-player
@@ -27,7 +29,7 @@ The player process is controllable via a WebSocket connection:
 var socket = new WebSocket('http://localhost:3000');
 
 // RPC call (calls `play(0, 0)` on the server)
-socket.send({ name: 'play', args: [0, 0] });
+socket.send(JSON.stringify({ name: 'play', args: [0, 0] }));
 
 // Listen for state changes from the server
 socket.onmessage = function (msg) {
@@ -51,3 +53,11 @@ socket.onmessage = function (msg) {
 * `queue:reset` - the player queue was reset with the items passed in the first arg
 * `queue:add` - the item passed in the first arg was appended to the player queue
 * `state` - the player state changed to the values in the first arg (object includes index, status and position properties)
+
+## index
+
+TODO
+
+## fileserver
+
+TODO
