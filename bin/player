@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var mdns = require('mdns2');
+var ws = require('ws');
+var pkg = require('../package');
+var Player = require('../lib/player');
+var Queue = require('../lib/queue');
+
+program
+    .version(pkg.version)
+    .option('-p, --port <port>', 'the port on which to listen (defaut 3000)', Number, 3000)
+    .option('-d, --debug', 'log debugging messages', Boolean, false)
+    .parse(process.argv);
+
+console.log('decibel-player v' + pkg.version);
+console.log('Listening on port:', program.port);
+
+var player = new Player();
+var queue = new Queue(player);
+var server = new ws.Server({ port: program.port });
+
+var txt = { name: 'decibel-player' };
+mdns.createAdvertisement(mdns.tcp('decibel'), program.port, { txtRecord: txt }).start();
+
+server.on('connection', function (socket) {
+    send([socket], { name: 'queue:reset', args: [queue.state.items.toJSON()] });
+    send([socket], { name: 'state', args: [queue.state.toJSON()] });
+
+    socket.on('message', function (message) {
+        try {
+            var data = JSON.parse(message);
+        } catch (err) {
+            return;
+        }
+
+        // Hide "private" methods
+        if (data.name[0] === '_') return;
+
+        var fn = queue[data.name];
+        if (fn && typeof fn === 'function') fn.apply(queue, data.args);
+        log('<--', data);
+    });
+});
+
+queue.on('*', function () {
+    var data = { name: this.event, args: [].slice.call(arguments) }
+    send(server.clients, data);
+});
+
+function send(sockets, data) {
+    var message = JSON.stringify(data);
+
+    sockets.forEach(function (socket) {
+        socket.send(message);
+    });
+
+    log('-->', data);
+}
+
+function log() {
+    if (!program.debug) return;
+    console.log.apply(console, arguments);
+}
