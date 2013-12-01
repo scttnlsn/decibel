@@ -1,6 +1,6 @@
 var assert = require('assert');
 var nock = require('nock');
-var Playable = require('../lib/playable');
+var Playable = require('../../lib/player/playable');
 
 describe('Playable', function () {
     beforeEach(function () {

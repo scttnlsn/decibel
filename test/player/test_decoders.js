@@ -1,5 +1,5 @@
 var assert = require('assert');
-var decoders = require('../lib/decoders');
+var decoders = require('../../lib/player/decoders');
 
 describe('Decoders', function () {
     describe('types', function () {

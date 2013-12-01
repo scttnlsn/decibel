@@ -4,8 +4,8 @@ var program = require('commander');
 var mdns = require('mdns2');
 var ws = require('ws');
 var pkg = require('../package');
-var Player = require('../lib/player');
-var Queue = require('../lib/queue');
+var Player = require('../lib/player/player');
+var Queue = require('../lib/player/queue');
 
 program
     .version(pkg.version)

@@ -3,8 +3,8 @@ var async = require('async');
 var nock = require('nock');
 var sinon = require('sinon');
 var helpers = require('./helpers');
-var Player = require('../lib/player');
-var utils = require('../lib/utils');
+var Player = require('../../lib/player/player');
+var utils = require('../../lib/player/utils');
 
 var player = new Player();
 var tone = helpers.tone();

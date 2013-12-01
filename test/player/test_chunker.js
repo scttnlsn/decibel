@@ -1,5 +1,5 @@
 var assert = require('assert');
-var Chunker = require('../lib/chunker');
+var Chunker = require('../../lib/player/chunker');
 
 describe('Chunker', function () {
     beforeEach(function () {

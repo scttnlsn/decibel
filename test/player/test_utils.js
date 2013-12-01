@@ -1,7 +1,7 @@
 var assert = require('assert');
 var nock = require('nock');
-var errors = require('../lib/errors');
-var utils = require('../lib/utils');
+var errors = require('../../lib/player/errors');
+var utils = require('../../lib/player/utils');
 
 describe('Utils', function () {
     describe('#stat', function () {

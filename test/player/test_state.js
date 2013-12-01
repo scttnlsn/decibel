@@ -1,5 +1,5 @@
 var assert = require('assert');
-var State = require('../lib/state');
+var State = require('../../lib/player/state');
 
 describe('State', function () {
     beforeEach(function () {

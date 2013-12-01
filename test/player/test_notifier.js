@@ -1,6 +1,6 @@
 var assert = require('assert');
 var events = require('events');
-var Notifier = require('../lib/notifier');
+var Notifier = require('../../lib/player/notifier');
 
 describe('Notifier', function () {
     beforeEach(function () {

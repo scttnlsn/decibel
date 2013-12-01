@@ -1,8 +1,8 @@
 var assert = require('assert');
 var sinon = require('sinon');
-var Player = require('../lib/player');
-var Queue = require('../lib/queue');
-var State = require('../lib/state');
+var Player = require('../../lib/player/player');
+var Queue = require('../../lib/player/queue');
+var State = require('../../lib/player/state');
 
 var player = new Player();
 var queue = new Queue(player);
