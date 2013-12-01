@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var mdns = require('mdns2');
+var pkg = require('../package');
+var Hosts = require('../lib/index/hosts');
+var Metadata = require('../lib/index/metadata');
+var server = require('../lib/index/server');
+
+program
+    .version(pkg.version)
+    .option('-p, --port <port>', 'the port on which to listen (defaut 3000)', Number, 3000)
+    .option('--db <path>', 'database path (default "./metadata.db")', String, './metadata.db')
+    .parse(process.argv);
+
+console.log('decibel-index v' + pkg.version);
+console.log('db:', program.db);
+
+var hosts = new Hosts();
+var metadata = new Metadata(program.db, hosts);
+var app = server(metadata);
+
+metadata.load(function (err) {
+    if (err) throw err;
+
+    hosts.listen();
+    app.listen(program.port);
+    console.log('Listening on port:', program.port);
+
+    var txt = { name: 'decibel-index' };
+    mdns.createAdvertisement(mdns.tcp('decibel'), program.port, { txtRecord: txt }).start();
+});
