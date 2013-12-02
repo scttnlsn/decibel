@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var fs = require('fs');
+var md5 = require('MD5');
+var mdns = require('mdns2');
+var uuid = require('node-uuid');
+var request = require('request');
+var pkg = require('../package');
+var Scanner = require('../lib/files/scanner');
+var server = require('../lib/files/server');
+
+var config = './.decibel';
+var identifier = identify();
+
+program
+    .version(pkg.version)
+    .option('-p, --port <port>', 'the port on which to listen (defaut 3000)', Number, 3000)
+    .option('--path <path>', 'files path', String)
+    .parse(process.argv);
+
+if (!program.path) {
+    console.log('Must specify --path');
+    process.exit(1);
+}
+
+console.log('decibel-files v' + pkg.version);
+console.log('path:', program.path);
+
+var app = server({ path: program.path });
+app.listen(program.port);
+
+var txt = { name: 'decibel-files', uuid: identifier };
+mdns.createAdvertisement(mdns.tcp('decibel'), program.port, { txtRecord: txt }).start();
+
+var browser = mdns.createBrowser(mdns.tcp('decibel'));
+
+browser.on('serviceUp', function (service) {
+    if (service.txtRecord.name === 'decibel-index') {
+        scan([service.addresses[1], service.port].join(':'));
+    }
+});
+
+browser.start();
+
+function scan(host) {
+    var url = 'http://' + host + '/metadata';
+    var scanner = new Scanner(program.path);
+
+    console.log('Saving to index:', url);
+
+    scanner.on('metadata', function (metadata) {
+        metadata.uuid = identifier;
+        metadata.id = md5(metadata.uuid + metadata.path);
+
+        request({
+            url: url,
+            method: 'POST',
+            body: metadata,
+            json: true
+        }, function (err) {
+            if (err) scanner.stop();
+        });
+    });
+
+    scanner.start();
+}
+
+function identify() {
+    if (fs.existsSync(config)) {
+        var data = JSON.parse(fs.readFileSync(config));
+        return data.uuid;
+    } else {
+        var id = uuid.v4();
+        var data = { uuid: id };
+        fs.writeFileSync(config, JSON.stringify(data, null, 4), { flags: 'w+' });
+        return id;
+    }
+}
