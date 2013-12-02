@@ -17,7 +17,7 @@ describe('Server', function () {
                 .post('/metadata')
                 .set('Content-Type', 'application/json')
                 .send({ id: 'foo' })
-                .expect(200)
+                .expect(201)
                 .end(done);
         });
 

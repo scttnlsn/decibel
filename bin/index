@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var program = require('commander');
+var level = require('level');
 var mdns = require('mdns2');
 var pkg = require('../package');
 var Hosts = require('../lib/index/hosts');
@@ -17,7 +18,7 @@ console.log('decibel-index v' + pkg.version);
 console.log('db:', program.db);
 
 var hosts = new Hosts();
-var metadata = new Metadata(program.db, hosts);
+var metadata = new Metadata(level(program.db), hosts);
 var app = server(metadata);
 
 metadata.load(function (err) {
